@@ -3,6 +3,7 @@
 Du vill ansöka om semester, men en vanlig intranätssökning på ”semesteransökan” ger en röra av gamla nyheter, manualer och rutiner.
 
 Med en intern AI-assistent är det lättare, då räcker det ofta att bara ställa frågan:
+
 **Hur ansöker jag om semester, och vem godkänner den?**
 
 Men att få en språkmodell att läsa och sammanfatta rätt utdrag – det som kallas RAG – är svårare än det ser ut, särskilt när svaret måste pusslas ihop från flera olika dokument. Här kikar vi under huven på hur tekniken fungerar, var den fallerar och hur den kan trimmas.
