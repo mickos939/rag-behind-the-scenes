@@ -23,7 +23,7 @@ Jag har lagt kod och metod som utfällbara fördjupningar. Huvudtexten går att 
 - [Vårt första testresultat: var uppstår problemen?](#vårt-första-testresultat-var-uppstår-problemen)
 - [En mer avancerad version: förbättra vägen till svaret](#en-mer-avancerad-version-förbättra-vägen-till-svaret)
 - [Resultatet: bättre totalt, men inte på allt](#resultatet-bättre-totalt-men-inte-på-allt)
-- [Vad det innebär att assistenten kan dokumenten](#vad-det-innebär-att-assistenten-kan-dokumenten)
+- [Vad det innebär](#vad-det-innebär)
 - [Kod och notebooks](#kod-och-notebooks)
 
 ---
@@ -48,7 +48,7 @@ I vår fiktiva personalhandbok finns tre dokument som kan bidra till rätt svar:
 
 Modellen i sig behöver inte tränas om. Vi ger den bara ett underlag att använda just när den ska svara. Ändras rutinen kan dokumenten och sökindexet uppdateras.
 
-Men varför inte skicka med hela handboken varje gång? För ett litet material är det fullt rimligt. I ett större material innebär det däremot att modellen får enorma mängder text att gå igenom för varje enskild fråga. Det slukar tokens i onödan, särskilt när svaret ryms i några få meningar. RAG gör ett urval innan svaret skrivs. Därmed blir själva **urvalet avgörande för svaret**.
+**Varför inte skicka med hela handboken varje gång?** För ett litet material är det fullt rimligt. I ett större material innebär det däremot att modellen får enorma mängder text att gå igenom för varje enskild fråga. Det slukar tokens i onödan, särskilt när svaret ryms i några få meningar. RAG gör ett urval innan svaret skrivs. Därmed blir själva urvalet avgörande för svaret.
 
 ## Första försöket: leta efter rätt ord
 
@@ -76,7 +76,9 @@ Semesteransökan registreras i Personalportalen.
 Närmaste chef godkänner semesteransökan. Status visas i Personalportalen.
 ```
 
-Det räcker för delar av svaret. Men om användaren skriver **”Hur söker jag ledigt i sommar?”** får just den här funktionen inga träffar. Orden matchar inte nycklarna. Instruktionen om vilka menyval som behövs ligger dessutom utanför vårt lilla uppslag.
+Det räcker för delar av svaret. Instruktionen om vilka menyval som behövs ligger däremot utanför vårt lilla uppslag.
+
+Men om användaren skriver **”Hur söker jag ledigt i sommar?”** får just den här funktionen inga träffar. Orden matchar inte nycklarna. 
 
 Vi behöver ett sätt att hitta rätt innehåll även när formuleringarna skiljer sig åt.
 
@@ -101,8 +103,6 @@ Det är svårt att föreställa sig 1 536 dimensioner. För att göra dem synlig
 *Varje punkt är ett textstycke. Grönt visar personaldokument, blått produkter, rött avtal och orange företagsinformation. Färgerna kommer från dokumentkategorierna; placeringen beräknas ur vektorerna. Närliggande grupper gör likheter mellan textstycken synliga.*
 
 Personalmaterialet samlas tydligt på ena sidan, medan produkt- och avtalsmaterial ligger närmare varandra på flera ställen. Det är begripligt: ett avtal kan beskriva samma produkt och egenskaper som produktinformationen. Kategorierna är olika, men innehållet kan överlappa.
-
-Kom ihåg att bilden är en förenklad karta över vektorerna där många dimensioner har komprimerats till få. Sökningen sker dock i det ursprungliga vektorrummet, inte i 3D-bilden.
 
 <details>
 <summary><strong>Teknisk fördjupning: Skapa vektorer och söka i databasen</strong></summary>
@@ -143,15 +143,15 @@ from sklearn.manifold import TSNE
 punkter_3d = TSNE(n_components=3, random_state=42).fit_transform(vektorer)
 ```
 
-t-SNE försöker bevara lokala grannskap. Axlarna har ingen bestämd ämnesbetydelse, och avstånd mellan grupper ska inte läsas som exakta mått på likhet i texten.
+Kom ihåg att bilden är en förenklad karta över vektorerna där många dimensioner har komprimerats till få. Sökningen sker dock i det ursprungliga vektorrummet, inte i 3D-bilden. t-SNE försöker bevara lokala grannskap. Axlarna har ingen bestämd ämnesbetydelse, och avstånd mellan grupper ska inte läsas som exakta mått på likhet i texten.
 
 </details>
 
 ## Hur stor ska en bit kunskap vara?
 
-Varför dela upp dokumenten över huvud taget? En personalhandbok kan handla om semester, löner, friskvård och arbetsmiljö. En enda vektor för hela texten behöver representera allt detta. Ett kortare avsnitt om semester kan bli en bättre och mer relevant sökträff för vår fråga.
+**Varför dela upp dokumenten över huvud taget?** En personalhandbok kan handla om semester, löner, friskvård och arbetsmiljö. En enda vektor för hela texten hade behövt representera allt detta. Ett kortare avsnitt om semester blir vanligtvis en mer relevant sökträff för vår fråga.
 
-Men uppdelningen kan också gå för långt. Tänk om `godkannande.md` delas vid meningsgränsen:
+Men uppdelningen kan också gå för långt. Tänk om `godkannande.md` skulle delas vid meningsgränsen:
 
 ```text
 Stycke 1: Närmaste chef godkänner semesteransökan.
@@ -168,7 +168,8 @@ Närmaste chef godkänner semesteransökan.
 Status visas i Personalportalen.
 ```
 
-Men en alltför stor textbit skapar ett annat problem. Om samma sökträff också innehåller flera sidor om lön och friskvård blir semesterinformationen en liten del av det som vektorn ska representera. **Chunking handlar om balansen: tillräckligt litet för att bli en tydlig sökträff, men tillräckligt stort för att behålla sammanhanget som behövs för svaret.** Ett vanligt sätt är att dela vid naturliga brytpunkter och låta texten överlappa mellan styckena.
+Chunking handlar om balansen: **tillräckligt litet för att bli en tydlig sökträff, men tillräckligt stort för att behålla sammanhanget som behövs för svaret.** 
+Ett vanligt sätt är att dela vid naturliga brytpunkter och låta texten överlappa mellan styckena.
 
 <details>
 <summary><strong>Teknisk fördjupning: Textuppdelning och försöksinställningar</strong></summary>
@@ -201,11 +202,11 @@ Nu har vi textstycken som kan besvara semesterfrågan. Nästa steg är att lägg
 | **Fråga:** Hur ansöker jag om semester, och vem godkänner den?<br><br>**Svar:** Du ansöker i Personalportalen under Ledighet → Semester. Ange datum och skicka ansökan. Din närmaste chef godkänner den, och du kan följa statusen i portalen. | `semester.md` Semesteransökan registreras i Personalportalen. <br><br>`personalportalen.md` Välj Ledighet → Semester, ange datum och skicka ansökan. <br><br>`godkannande.md` Närmaste chef godkänner semesteransökan. Status visas i Personalportalen. |
 
 
-Nu går det att följa varje del av svaret tillbaka till ett utdrag. Det visar också varför en fråga kan vara svårare än den låter: **var** man ansöker, **hur** man gör det och **vem** som godkänner framgår av olika dokument. Om sökningen missar ett av dem kan svaret bli välformulerat men ofullständigt. Frågor som kräver flera sådana informationsdelar kallas *spanning* i utvärderingen.
-
-Men tänk om frågan i stället är: **”Hur många dagar i förväg måste jag ansöka?”** Inget av de tre utdragen anger någon tidsgräns. Då är ett bra svar: *”Jag hittar ingen uppgift om det i de här dokumenten.”* Att använda dokument som underlag innebär också att låta bli att fylla i sådant som saknas.
+Nu går det att följa varje del av svaret tillbaka till ett utdrag. Det visar också varför en fråga kan vara svårare än den låter: **var** man ansöker, **hur** man gör det och **vem** som godkänner framgår av olika dokument. Om sökningen missar ett av dem kan svaret bli välformulerat men ofullständigt.
 
 Källnamnen gör det möjligt att granska svaret. De garanterar inte i sig att varje påstående stöds av texten; det behöver vi kontrollera genom att jämföra dem.
+
+Men tänk om frågan i stället är: **”Hur många dagar i förväg måste jag ansöka?”** Inget av de tre utdragen anger någon tidsgräns. Då är ett bra svar: *”Jag hittar ingen uppgift om det i de här dokumenten.”* Att använda dokument som underlag innebär också att låta bli att fylla i sådant som saknas.
 
 <details>
 <summary><strong>Teknisk fördjupning: Svarsfunktionen med promptmall</strong></summary>
@@ -240,6 +241,7 @@ def svara(fraga):
 
 Modellen får vanlig text att läsa. Vektorerna har redan gjort sitt arbete i sökningen. 
 
+
 </details>
 
 ## Hur man kan testa och utvärdera RAG
@@ -256,7 +258,7 @@ Labbens testunderlag innehåller **150 frågor** i olika kategorier: direkta fak
 | Spanning     | Hur ansöker jag om semester, och vem godkänner den? | Registrera ansökan i Personalportalen, välj Ledighet → Semester, ange datum och skicka in. Närmaste chef godkänner. Sökord: `Personalportalen`, `Semester`, `närmaste chef`. |
 
 
-Skillnaden mellan kategorierna är användbar: en lösning kan bli bättre på enkla faktafrågor och samtidigt missa frågor som kräver att flera källor hittas. Ett testunderlag gör det möjligt att se *vilken sorts fel* en förändring påverkar.
+Skillnaden mellan kategorierna är viktig: en lösning kan bli bättre på enkla faktafrågor och samtidigt missa frågor som kräver att flera källor hittas. Ett testunderlag gör det möjligt att se *vilken sorts fel* en förändring påverkar.
 
 <details>
 <summary><strong>Teknisk fördjupning: Testfall, sökmått och svarbedömning</strong></summary>
@@ -296,13 +298,13 @@ Vårt första test nådde **4,05 av 5 i bedömd korrekthet** och **87,5 % nyckel
 
 **Flerkällsfrågorna visade sig vara svårast.** Där stannade MRR under 0,4 och svarskorrektheten under 3 av 5. Även helhetsfrågorna (*holistic*) hade märkbara problem. Semesterexemplet illustrerar utmaningen: det räcker inte att hitta ett stycke om rätt ämne när svaret behöver flera uppgifter.
 
-Det väcker nästa fråga: **kan ett bättre förberett och mer genomtänkt urval ge svarsmodellen ett mer komplett underlag?**
+Det väcker nästa fråga: *kan ett bättre förberett urval ge svarsmodellen ett mer komplett underlag?*
 
 ## En mer avancerad version: förbättra vägen till svaret
 
-Nu när grunden fungerar blir nästa fråga hur vi ska förbättra dess svaga punkter. 
+Nu när vi har en fungerande RAG-lösning är nästa fråga om det går att förbättra dess svaga punkter. 
 
-Det är anledningen till att vi här skapar en **Pro-version** som är lite mer avancerad. Den ger textstyckena bättre sammanhang, skriver om följdfrågor med hjälp av samtalshistoriken och rangordnar hämtade kandidater på nytt. Varje steg försöker förbättra vilket underlag som når svarmodellen: 
+Vi skapar därför en **Pro-version** som är lite mer avancerad. Den ger textstyckena bättre sammanhang, skriver om följdfrågor med hjälp av samtalshistoriken och rangordnar hämtade kandidater på nytt. Varje steg försöker förbättra vilket underlag som når svarsmodellen: 
 
 ### 1. Gör textstyckena mer begripliga
 
@@ -358,8 +360,6 @@ flowchart TD
 
 Vektorsökningen tar fram kandidater utifrån likhet mellan representationer. Omrankningen läser frågan och kandidaternas text för att ordna dem efter användbarhet. Den kan flytta upp `godkannande.md` i exemplet ovan, men den kan inte hitta ett utdrag som aldrig kom med bland kandidaterna. 
 
-De extra stegen innebär fler modellanrop, vilket ökar både tokenförbrukningen och svarstiden. En mer avancerad arkitektur innebär alltid en avvägning: för kritiska interna processer är den högre precisionen värd de extra anropen och sekunderna, medan en enklare lösning kan vara fullt tillräcklig för snabba och okomplicerade sökningar.
-
 <details>
 <summary><strong>Teknisk fördjupning: Kärnan i pro-versionens sökning</strong></summary>
 
@@ -377,11 +377,11 @@ def hamta_kontext(fraga, historik=None):
 
 Originalfrågan används för omrankningen eftersom det är den vi ska besvara. Att samma modell kan skriva om en fråga, rangordna text och formulera ett svar beror på att varje anrop får olika instruktioner och underlag.
 
-I dokumentbearbetningen och omrankningen används också **Pydantic** för strukturerade utdata: modellen ska lämna bestämda fält eller en lista med ordningsnummer. Det gör resultatet lättare att använda i kod. Ett giltigt format garanterar däremot inte att bedömningen är riktig.
+De extra stegen innebär fler modellanrop, vilket ökar både tokenförbrukningen och svarstiden. En mer avancerad arkitektur innebär alltid en avvägning: för kritiska interna processer är den högre precisionen värd de extra anropen och sekunderna, medan en enklare lösning kan vara fullt tillräcklig för snabba och okomplicerade sökningar.
 
 </details>
 
-## Resultatet: bättre totalt, men inte på allt
+## Slutresultatet: bättre totalt, men inte på allt
 
 Vad blev skillnaden när de två lösningarna utvärderades på 150 testfrågor?
 
@@ -402,13 +402,13 @@ Vad blev skillnaden när de två lösningarna utvärderades på 150 testfrågor?
 
 Det samlade resultatet förbättrades på alla sex mått. Nyckelordstäckningen steg med **7,1 procentenheter**, och betyget för korrekthet ökade med **0,49 poäng**. Vi ser alltså både bättre sökindikatorer och bättre bedömda svar.
 
-Men kategorierna berättar mer än genomsnittet. Frågor som kräver flera informationsdelar, *spanning*, förbättrades tydligt. Det är precis den sorts utmaning som semesterexemplet illustrerar: en komplett instruktion kan kräva flera textstycken. Frågor om helheten är fortfarande svårare än många direkta faktafrågor.
+Men de kategorierna i sig säger mer än enbart genomsnittet. Frågor som kräver flera informationsdelar, *spanning*, förbättrades tydligt. Det är precis den sorts utmaning som semesterexemplet illustrerar: en komplett instruktion kan kräva flera textstycken. Frågor om helheten är fortfarande svårare än många direkta faktafrågor.
 
-**Numeriska frågor gick däremot något bakåt**, både i sökmått MRR och svarskorrekthet. Diagrammen visar förändringen men avslöjar inte orsaken. För att förstå den skulle jag gå tillbaka till just de frågorna och granska vilka uppgifter som hämtades och hur svaren formulerades.
+**Numeriska frågor gick däremot något bakåt**, både i sökmått MRR och svarskorrekthet. Diagrammen visar förändringen men avslöjar inte orsaken. För att förstå den skulle man behöva gå tillbaka till just de frågorna och granska vilka uppgifter som hämtades och hur svaren formulerades.
 
-Kom även ihåg att alla förbättringar i Pro-versionen gjordes samtidigt. Dokumentbearbetning, embeddingmodell, sökning, instruktioner och mängden kontext ändrades tillsammans. För att veta vad varje del bidrog med skulle förändringarna behöva testas var för sig.
+Det är även värt att notera att alla förbättringar i denna version gjordes samtidigt, dokumentbearbetning, embeddingmodell, sökning, instruktioner och mängden kontext ändrades tillsammans. För att veta vad varje del bidrog med skulle de behöva testas var för sig.
 
-## Vad det innebär att assistenten kan dokumenten
+## Vad det innebär
 
 I början såg uppgiften enkel ut: ge en AI våra dokument och låt den svara. Under labben blev det tydligt hur många informationsval som ryms i den beskrivningen. Texten ska delas upp utan att viktiga samband går förlorade. Frågan ska leda till rätt kandidater. Underlaget måste täcka det användaren faktiskt frågade om. Först därefter formuleras svaret.
 
@@ -433,4 +433,4 @@ Nästa gång en dokumentassistent ger mig ett snyggt svar vill jag därför ocks
 - [Pro-versionens dokumentbearbetning](labbar/ingest_pro.py) och [sökning och svar](labbar/answer_pro.py)
 - [Utvärderingslogik](labbar/eval.py) och [testfrågornas struktur](labbar/test.py)
 
-**Bakgrund:** [Ed Donners LLM Engineering-kurs, week 5](https://github.com/ed-donner/llm_engineering/tree/main/week5). För den som vill fördjupa sig i visualiseringen finns även [scikit-learns beskrivning av t-SNE](https://scikit-learn.org/1.5/modules/generated/sklearn.manifold.TSNE.html).
+**Bakgrund:** [Ed Donners LLM Engineering-kurs, week 5](https://github.com/ed-donner/llm_engineering). För den som vill fördjupa sig i visualiseringen finns även [scikit-learns beskrivning av t-SNE](https://scikit-learn.org/1.5/modules/generated/sklearn.manifold.TSNE.html).
