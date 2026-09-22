@@ -1,8 +1,7 @@
 # Hur hittar din AI-assistent rätt bland alla dokument?
 
 Du vill ansöka om semester, men en vanlig intranätssökning på ”semesteransökan” ger en röra av gamla nyheter, manualer och rutiner.
-
-Med en intern AI-assistent räcker det ofta att ställa frågan:
+Med en intern AI-assistent är det lättare, då räcker det ofta att bara ställa frågan:
 
 **Hur ansöker jag om semester, och vem godkänner den?**
 
