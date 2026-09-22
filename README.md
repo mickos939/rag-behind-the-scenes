@@ -2,13 +2,13 @@
 
 Du vill ansöka om semester, men en vanlig intranätssökning på ”semesteransökan” ger en röra av gamla nyheter, manualer och rutiner.
 
-Med en intern AI-assistent borde det räcka att ställa frågan:
+Med en intern AI-assistent räcker det ofta att ställa frågan:
 
 **Hur ansöker jag om semester, och vem godkänner den?**
 
-Men att få en språkmodell att läsa och sammanfatta rätt utdrag – det som kallas **RAG** – är svårare än det ser ut, särskilt när svaret måste pusslas ihop från flera olika dokument. Här kikar vi under huven på hur tekniken fungerar, var den fallerar och hur den kan trimmas.
+Men att få en språkmodell att läsa och sammanfatta rätt utdrag – det som kallas RAG – är svårare än det ser ut, särskilt när svaret måste pusslas ihop från flera olika dokument. Här kikar vi under huven på hur tekniken fungerar, var den fallerar och hur den kan trimmas.
 
-I den här artikeln, som bygger på Ed Donners kurs i LLM Engineering, följer vi hela kedjan: från enkel ordmatchning till sökning med embeddings, utvärdering och en mer avancerad RAG-lösning. Exemplen utgår från en fiktiv svensk personalhandbok. Resultaten kommer från mina körningar på labbens 150 testfrågor.
+I det här testet, som bygger på Ed Donners kurs i LLM Engineering, följer vi hela kedjan: från enkel ordmatchning till sökning med embeddings, utvärdering och en mer avancerad RAG-lösning. Exemplen utgår från en fiktiv svensk personalhandbok. Resultaten kommer från mina körningar på labbens 150 testfrågor.
 
 Jag har lagt kod och metod som utfällbara fördjupningar. Huvudtexten går att läsa utan att öppna dem.
 
@@ -149,7 +149,7 @@ t-SNE försöker bevara lokala grannskap. Axlarna har ingen bestämd ämnesbetyd
 
 ## Hur stor ska en bit kunskap vara?
 
-Varför dela upp dokumenten över huvud taget? En personalhandbok kan handla om semester, löner, friskvård och arbetsmiljö. En enda vektor för hela texten behöver representera allt detta. Ett kortare avsnitt om semester kan bli en mer träffsäker sökkandidat för vår fråga.
+Varför dela upp dokumenten över huvud taget? En personalhandbok kan handla om semester, löner, friskvård och arbetsmiljö. En enda vektor för hela texten behöver representera allt detta. Ett kortare avsnitt om semester kan bli en bättre och mer relevant sökträff för vår fråga.
 
 Men uppdelningen kan också gå för långt. Tänk om `godkannande.md` delas vid meningsgränsen:
 
