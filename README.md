@@ -143,7 +143,9 @@ from sklearn.manifold import TSNE
 punkter_3d = TSNE(n_components=3, random_state=42).fit_transform(vektorer)
 ```
 
-Kom ihåg att bilden är en förenklad karta över vektorerna där många dimensioner har komprimerats till få. Sökningen sker dock i det ursprungliga vektorrummet, inte i 3D-bilden. t-SNE försöker bevara lokala grannskap. Axlarna har ingen bestämd ämnesbetydelse, och avstånd mellan grupper ska inte läsas som exakta mått på likhet i texten.
+t-SNE försöker bevara lokala grannskap. Axlarna har ingen bestämd ämnesbetydelse, och avstånd mellan grupper ska inte läsas som exakta mått på likhet i texten.
+
+Kom ihåg att bilden ovan är en förenklad karta över vektorerna där många dimensioner har komprimerats till få. Sökningen sker dock i det ursprungliga vektorrummet. 
 
 </details>
 
@@ -168,7 +170,7 @@ Närmaste chef godkänner semesteransökan.
 Status visas i Personalportalen.
 ```
 
-Chunking handlar om balansen: **tillräckligt litet för att bli en tydlig sökträff, men tillräckligt stort för att behålla sammanhanget som behövs för svaret.** 
+*Chunking handlar om balansen: tillräckligt litet för att bli en tydlig sökträff, men tillräckligt stort för att behålla sammanhanget som behövs för svaret.* 
 Ett vanligt sätt är att dela vid naturliga brytpunkter och låta texten överlappa mellan styckena.
 
 <details>
@@ -188,7 +190,7 @@ chunks = text_splitter.split_documents(documents)
 
 Här avser storleken **tecken**, inte tokens. Överlappet gör att en del text kan följa med till nästa stycke. Det minskar risken att information försvinner precis vid gränsen, men garanterar inte att alla nödvändiga samband bevaras.
 
-Även **antalet hämtade stycken** spelar roll. Storlek och antal avgör tillsammans hur mycket text svarsmodellen får läsa och behöver därför vägas mot varandra. 
+Även *antalet hämtade stycken* spelar roll. Storlek och antal avgör tillsammans hur mycket text svarsmodellen får läsa och behöver därför vägas mot varandra. 
 
 </details>
 
@@ -202,7 +204,7 @@ Nu har vi textstycken som kan besvara semesterfrågan. Nästa steg är att lägg
 | **Fråga:** Hur ansöker jag om semester, och vem godkänner den?<br><br>**Svar:** Du ansöker i Personalportalen under Ledighet → Semester. Ange datum och skicka ansökan. Din närmaste chef godkänner den, och du kan följa statusen i portalen. | `semester.md` Semesteransökan registreras i Personalportalen. <br><br>`personalportalen.md` Välj Ledighet → Semester, ange datum och skicka ansökan. <br><br>`godkannande.md` Närmaste chef godkänner semesteransökan. Status visas i Personalportalen. |
 
 
-Nu går det att följa varje del av svaret tillbaka till ett utdrag. Det visar också varför en fråga kan vara svårare än den låter: **var** man ansöker, **hur** man gör det och **vem** som godkänner framgår av olika dokument. Om sökningen missar ett av dem kan svaret bli välformulerat men ofullständigt.
+Nu går det att följa varje del av svaret tillbaka till ett utdrag. Det visar också varför en fråga kan vara svårare än den låter: *var* man ansöker, *hur* man gör det och *vem* som godkänner framgår av olika dokument. Om sökningen missar ett av dem kan svaret bli välformulerat men ofullständigt.
 
 Källnamnen gör det möjligt att granska svaret. De garanterar inte i sig att varje påstående stöds av texten; det behöver vi kontrollera genom att jämföra dem.
 
@@ -246,7 +248,7 @@ Modellen får vanlig text att läsa. Vektorerna har redan gjort sitt arbete i s�
 
 ## Hur man kan testa och utvärdera RAG
 
-Ett lyckat svar på semesterfrågan visar att systemet *kan* fungera. Det säger mindre om hur ofta det fungerar, eller vilka frågor det misslyckas med. För att jämföra två versioner behövs därför **fasta testfrågor med referenssvar och förväntade sökord**.
+Ett lyckat svar på semesterfrågan visar att systemet *kan* fungera. Det säger mindre om hur ofta det fungerar, eller vilka frågor det misslyckas med. För att jämföra två versioner behövs därför *fasta testfrågor med referenssvar och sökord*.
 
 Labbens testunderlag innehåller **150 frågor** i olika kategorier: direkta faktafrågor, tidsfrågor, jämförelser, numeriska frågor, relationer, frågor som kräver flera informationsdelar och frågor om helheten. Här är några exempel:
 
@@ -296,7 +298,7 @@ Vårt första test nådde **4,05 av 5 i bedömd korrekthet** och **87,5 % nyckel
 
 *Titta särskilt på spanning: både sökmåttet MRR och svarskorrektheten ligger tydligt under de enklare faktafrågorna.* 
 
-**Flerkällsfrågorna visade sig vara svårast.** Där stannade MRR under 0,4 och svarskorrektheten under 3 av 5. Även helhetsfrågorna (*holistic*) hade märkbara problem. Semesterexemplet illustrerar utmaningen: det räcker inte att hitta ett stycke om rätt ämne när svaret behöver flera uppgifter.
+*Flerkällsfrågorna visade sig vara svårast.* Där stannade MRR under 0,4 och svarskorrektheten under 3 av 5. Även helhetsfrågorna (*holistic*) hade märkbara problem. Semesterexemplet illustrerar utmaningen: det räcker inte att hitta ett stycke om rätt ämne när svaret behöver flera uppgifter.
 
 Det väcker nästa fråga: *kan ett bättre förberett urval ge svarsmodellen ett mer komplett underlag?*
 
@@ -304,7 +306,7 @@ Det väcker nästa fråga: *kan ett bättre förberett urval ge svarsmodellen et
 
 Nu när vi har en fungerande RAG-lösning är nästa fråga om det går att förbättra dess svaga punkter. 
 
-Vi skapar därför en **Pro-version** som är lite mer avancerad. Den ger textstyckena bättre sammanhang, skriver om följdfrågor med hjälp av samtalshistoriken och rangordnar hämtade kandidater på nytt. Varje steg försöker förbättra vilket underlag som når svarsmodellen: 
+Vi skapar därför en *Pro-version* som är lite mer avancerad. Den ger textstyckena bättre sammanhang, skriver om följdfrågor med hjälp av samtalshistoriken och rangordnar hämtade kandidater på nytt. Varje steg försöker förbättra vilket underlag som når svarsmodellen: 
 
 ### 1. Gör textstyckena mer begripliga
 
@@ -404,7 +406,7 @@ Det samlade resultatet förbättrades på alla sex mått. Nyckelordstäckningen 
 
 Men de kategorierna i sig säger mer än enbart genomsnittet. Frågor som kräver flera informationsdelar, *spanning*, förbättrades tydligt. Det är precis den sorts utmaning som semesterexemplet illustrerar: en komplett instruktion kan kräva flera textstycken. Frågor om helheten är fortfarande svårare än många direkta faktafrågor.
 
-**Numeriska frågor gick däremot något bakåt**, både i sökmått MRR och svarskorrekthet. Diagrammen visar förändringen men avslöjar inte orsaken. För att förstå den skulle man behöva gå tillbaka till just de frågorna och granska vilka uppgifter som hämtades och hur svaren formulerades.
+*Numeriska frågor gick däremot något bakåt*, både i sökmått MRR och svarskorrekthet. Diagrammen visar förändringen men avslöjar inte orsaken. För att förstå den skulle man behöva gå tillbaka till just de frågorna och granska vilka uppgifter som hämtades och hur svaren formulerades.
 
 Det är även värt att notera att alla förbättringar i denna version gjordes samtidigt, dokumentbearbetning, embeddingmodell, sökning, instruktioner och mängden kontext ändrades tillsammans. För att veta vad varje del bidrog med skulle de behöva testas var för sig.
 
